@@ -1,5 +1,5 @@
 .student-container {
-  background-image: url('/images/Student.jpg');
+  background-image: url("./assets/student.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
