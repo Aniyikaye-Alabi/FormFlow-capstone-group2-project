@@ -1,134 +1,229 @@
-.student-container {
-  background-image: url("./assets/Student.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+/* Student.css */
 
+.student-container {
   min-height: 100vh;
   width: 100%;
 
   padding: 40px;
+
+  background:
+    linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45)),
+    url("./assets/Student.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
   box-sizing: border-box;
 }
 
 .student-layout {
   display: flex;
+  gap: 40px;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 50px;
   flex-wrap: wrap;
 }
+
+/* Left Panel */
 
 .content {
   flex: 1;
   min-width: 320px;
-  max-width: 450px;
+  max-width: 430px;
+
+  background: rgba(255,255,255,.12);
+  backdrop-filter: blur(10px);
+
+  padding: 30px;
+  border-radius: 20px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
 }
 
 .store-student-details,
 .student-details {
-  background: linear-gradient(#ffeb7c, #297eff);
-  color: black;
-  padding: 12px 20px;
-  border-radius: 10px;
   display: inline-block;
+
+  padding: 12px 24px;
+
   margin-bottom: 25px;
+
+  border-radius: 12px;
+
+  background: linear-gradient(135deg,#ffeb7c,#297eff);
+
+  color: #111;
+  font-weight: 700;
+
+  box-shadow: 0 6px 15px rgba(0,0,0,.2);
 }
 
+/* Form */
+
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 6px;
-  font-weight: bold;
-  color: #000;
-  background: #b1ff9d;
-  padding: 5px 10px;
-  border-radius: 8px;
+
+  margin-bottom: 8px;
+
+  font-weight: 600;
+
+  color: white;
 }
 
-.form-group input[type="text"] {
+.form-group input {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
+
+  padding: 14px;
+
   border: none;
   outline: none;
+
+  border-radius: 10px;
+
   font-size: 15px;
+
+  transition: .3s;
+
   box-sizing: border-box;
 }
 
+.form-group input:focus {
+  box-shadow: 0 0 0 3px rgba(41,126,255,.35);
+}
+
 .form-group button {
-  background: #ff9800;
-  color: white;
+  width: 100%;
+
+  padding: 14px;
+
   border: none;
-  padding: 12px 30px;
+
   border-radius: 10px;
-  cursor: pointer;
+
+  background: linear-gradient(135deg,#ff9800,#ff5722);
+
+  color: white;
+
   font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all .3s ease;
 }
 
 .form-group button:hover {
-  background: #e68900;
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 20px rgba(0,0,0,.25);
 }
+
+/* Table */
 
 .table-section {
   flex: 2;
-  min-width: 500px;
+  min-width: 600px;
+
+  background: rgba(255,255,255,.95);
+
+  border-radius: 20px;
+
+  padding: 25px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+
   overflow-x: auto;
 }
 
 .student-table {
   width: 100%;
+
   border-collapse: collapse;
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
+}
+
+.student-table thead {
+  background: #297eff;
+  color: white;
 }
 
 .student-table th,
 .student-table td {
-  border: 1px solid #ccc;
-  padding: 10px;
+  padding: 14px;
+
+  border-bottom: 1px solid #eee;
+
   text-align: center;
 }
 
-.student-table thead {
-  background: #ddd;
-}
-
 .student-table tbody tr:nth-child(even) {
-  background: #f8f8f8;
+  background: #f8f9fb;
 }
 
 .student-table tbody tr:hover {
-  background: #ececec;
+  background: #edf4ff;
+
+  transition: .3s;
 }
 
+/* Delete Button */
+
 .delete-button {
-  background: #f44336;
-  color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+
+  padding: 8px 18px;
+
+  border-radius: 8px;
+
+  background: #f44336;
+
+  color: white;
+
   cursor: pointer;
+
+  transition: .3s;
 }
 
 .delete-button:hover {
   background: #d32f2f;
+
+  transform: scale(1.05);
 }
 
+/* Responsive */
+
 @media (max-width: 992px) {
+
   .student-layout {
     flex-direction: column;
   }
 
+  .content,
   .table-section {
+    width: 100%;
+    max-width: 100%;
     min-width: 100%;
   }
 
-  .content {
-    max-width: 100%;
+}
+
+@media (max-width: 768px) {
+
+  .student-container {
+    padding: 20px;
   }
+
+  .content,
+  .table-section {
+    padding: 20px;
+  }
+
+  .student-table {
+    font-size: 14px;
+  }
+
 }
