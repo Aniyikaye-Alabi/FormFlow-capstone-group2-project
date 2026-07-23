@@ -1,127 +1,183 @@
-return (
-  <div className="student-container">
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-    <div className="student-layout">
+function Student() {
+  const [studentData, setStudentData] = useState({
+    name: '',
+    rollNo: '',
+    class: '',
+  });
 
-      <div className="content">
+  const [data, setData] = useState([]);
 
-        <h2 className="store-student-details">
-          Student Details
-        </h2>
+  const fetchStudents = async () => {
+    try {
+      const res = await axios.get('/api/students');
+      setData(res.data);
+    } catch (err) {
+      console.error('Failed to fetch students:', err);
+    }
+  };
 
-        <form onSubmit={handleSubmit}>
+  useEffect(() => {
+    fetchStudents();
+  }, []);
 
-          <div className="form-group">
-            <label>Name</label>
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setStudentData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-            <input
-              type="text"
-              name="name"
-              value={studentData.name}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('/api/students', studentData);
+      setStudentData({ name: '', rollNo: '', class: '' });
+      fetchStudents();
+    } catch (err) {
+      console.error('Failed to submit student:', err);
+    }
+  };
 
-          <div className="form-group">
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/api/students/${id}`);
+      fetchStudents();
+    } catch (err) {
+      console.error('Failed to delete student:', err);
+    }
+  };
 
-            <label>Roll Number</label>
+  return (
+    <div className="student-container">
 
-            <input
-              type="text"
-              name="rollNo"
-              value={studentData.rollNo}
-              onChange={handleInputChange}
-              required
-            />
+      <div className="student-layout">
 
-          </div>
+        <div className="content">
 
-          <div className="form-group">
+          <h2 className="store-student-details">
+            Student Details
+          </h2>
 
-            <label>Class</label>
+          <form onSubmit={handleSubmit}>
 
-            <input
-              type="text"
-              name="class"
-              value={studentData.class}
-              onChange={handleInputChange}
-            />
+            <div className="form-group">
+              <label>Name</label>
 
-          </div>
+              <input
+                type="text"
+                name="name"
+                value={studentData.name}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
 
-          <div className="form-group">
-            <button type="submit">
-              Submit
-            </button>
-          </div>
+            <div className="form-group">
 
-        </form>
+              <label>Roll Number</label>
 
-      </div>
+              <input
+                type="text"
+                name="rollNo"
+                value={studentData.rollNo}
+                onChange={handleInputChange}
+                required
+              />
 
-      <div className="table-section">
+            </div>
 
-        <h2 className="student-details">
-          Student Records
-        </h2>
+            <div className="form-group">
 
-        <table className="student-table">
+              <label>Class</label>
 
-          <thead>
+              <input
+                type="text"
+                name="class"
+                value={studentData.class}
+                onChange={handleInputChange}
+              />
 
-            <tr>
+            </div>
 
-              <th>ID</th>
+            <div className="form-group">
+              <button type="submit">
+                Submit
+              </button>
+            </div>
 
-              <th>Name</th>
+          </form>
 
-              <th>Roll Number</th>
+        </div>
 
-              <th>Class</th>
+        <div className="table-section">
 
-              <th>Action</th>
+          <h2 className="student-details">
+            Student Records
+          </h2>
 
-            </tr>
+          <table className="student-table">
 
-          </thead>
+            <thead>
 
-          <tbody>
+              <tr>
 
-            {data.map((d) => (
+                <th>ID</th>
 
-              <tr key={d.id}>
+                <th>Name</th>
 
-                <td>{d.id}</td>
+                <th>Roll Number</th>
 
-                <td>{d.name}</td>
+                <th>Class</th>
 
-                <td>{d.roll_number}</td>
-
-                <td>{d.class}</td>
-
-                <td>
-
-                  <button
-                    className="delete-button"
-                    onClick={() => handleDelete(d.id)}
-                  >
-                    Delete
-                  </button>
-
-                </td>
+                <th>Action</th>
 
               </tr>
 
-            ))}
+            </thead>
 
-          </tbody>
+            <tbody>
 
-        </table>
+              {data.map((d) => (
+
+                <tr key={d.id}>
+
+                  <td>{d.id}</td>
+
+                  <td>{d.name}</td>
+
+                  <td>{d.roll_number}</td>
+
+                  <td>{d.class}</td>
+
+                  <td>
+
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDelete(d.id)}
+                    >
+                      Delete
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
+
+        </div>
 
       </div>
 
     </div>
+  );
+}
 
-  </div>
-);
+export default Student;
