@@ -1,145 +1,134 @@
-/* Student.css */
-
 .student-container {
-    background-image: url('assets/Student.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-    height: 100vh;
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    filter: brightness(50%);
-  }
-  
-  .content {
-    text-align: left;
-    color: #000000;
-    margin-left: 200px;
-  }
- 
+  background-image: url('/images/Student.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
-  .store-student-details {
-    font-size: 24px;
-    background: -webkit-linear-gradient(#ffeb7c, #297eff);
-  -webkit-text-fill-color: black;
-    color: transparent;
-    display: inline-block;
-    padding: 10px 20px;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-    background-color: white;
-    border-radius: 10px;
-    margin-left: 100px;
-  }
-  
-  
+  min-height: 100vh;
+  width: 100%;
 
-
-  div .student-details {
-    /* margin-left: 100px; */
-    color: #fff;
-    margin-top: 150px;
-    border-radius: 50px; 
-    position: absolute; top: 0px; right: 200px;/* Adjust the margin value as needed */
-    font-size: 24px;
-    background: -webkit-linear-gradient(#8b6b8f, #a2a3df);
-  -webkit-text-fill-color: black;
-    color: transparent;
-    text-align: center;
-    display: inline-block;
-    padding: 10px 20px;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-    background-color: white;
-    border-radius: 10px;
-
-  }
-
-
-  
-  /* Style for "Student Details" text */
-  .content h2 {
-    margin-right: 50px; /* Adjust the margin to center with text fields */
-    background-color: white;
-    margin-left: 200px;
-    margin-top: 300px;
-  }
-  
-  /* Style for text labels */
-  .form-group label {
-    color: #000000;
-    background-color: #b1ff9d;
-    border-radius: 10px;
-    margin-right: 10px; /* Add spacing between labels and input fields */
-    font-weight: bold;
-    margin-bottom: 50px;
-    margin-top: 50px;
-  }
-  
-  /* Style for text fields */
-  .form-group input[type="text"] {
-    margin-bottom: 10px; /* Adjust the value to control the spacing */
-    width: 150%; /* Increase text field size to 1.5x */
-    border-radius: 10px; /* Add curved border to text fields */
-    padding: 10px; /* Add some padding for better appearance */
-    border: none; /* Remove default borders */
-    outline: none; /* Remove focus outline */
-    font-weight: bold; /* Make text bold */
-    font-family: 'Arial', sans-serif; /* Use a text-style font */
-    margin-top: 5px;
-  }
-  
-  /* Style for "Submit" button */
-  .form-group button[type="submit"] {
-    background-color: #ff9800;
-    color: #fff;
-    padding: 12.5px 25px; /* Make the button 1.25x bigger */
-    border: none;
-    cursor: pointer;
-    margin-top: 20px; /* Add spacing between the last text field and the button */
-    margin-left: 100px; /* Move the button slightly to the right */
-    margin-right: 50px;
-    border-radius: 10px; /* Add curved border to the button */
-  }
-
-  /* Student.css */
-
-/* Add cool styles and animations for the delete button */
-.delete-button {
-  background-color: #f44336; /* Red background color */
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Transition for color and scale */
+  padding: 40px;
+  box-sizing: border-box;
 }
 
-.delete-button:hover {
-  background-color: #d32f2f; /* Darker red on hover */
-  transform: scale(1.1); /* Scale up on hover */
+.student-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 50px;
+  flex-wrap: wrap;
+}
+
+.content {
+  flex: 1;
+  min-width: 320px;
+  max-width: 450px;
+}
+
+.store-student-details,
+.student-details {
+  background: linear-gradient(#ffeb7c, #297eff);
+  color: black;
+  padding: 12px 20px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #000;
+  background: #b1ff9d;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.form-group button {
+  background: #ff9800;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.form-group button:hover {
+  background: #e68900;
+}
+
+.table-section {
+  flex: 2;
+  min-width: 500px;
+  overflow-x: auto;
 }
 
 .student-table {
-  border-collapse: separate;
-  border-spacing: 0;
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
   border-radius: 10px;
   overflow: hidden;
-  width: 100%; /* Make sure the table spans the full width of its container */
 }
 
-.gradient-bg {
-  background: linear-gradient(135deg, #f7dfcf, #ebe5d9);
+.student-table th,
+.student-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.student-table thead {
+  background: #ddd;
+}
+
+.student-table tbody tr:nth-child(even) {
+  background: #f8f8f8;
 }
 
 .student-table tbody tr:hover {
-  transform: scale(1.02);
-  transition: transform 0.3s ease-in-out;
+  background: #ececec;
 }
 
-  /* Rest of your CSS styles for the Student component */
-  
+.delete-button {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background: #d32f2f;
+}
+
+@media (max-width: 992px) {
+  .student-layout {
+    flex-direction: column;
+  }
+
+  .table-section {
+    min-width: 100%;
+  }
+
+  .content {
+    max-width: 100%;
+  }
+}
