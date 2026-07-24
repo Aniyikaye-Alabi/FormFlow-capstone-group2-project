@@ -112,22 +112,19 @@ jobs:
             'git reset --hard origin/main',
             'echo ${TAG} | sudo tee /opt/capstone/current_version',
 
-            cat > .env <<EOF
-            DOCKERHUB_USER=jioke1
-            TAG=${TAG}
+            'rm -f .env',
+            'echo "DOCKERHUB_USER=jioke1" >> .env',
+            'echo "TAG=${TAG}" >> .env',
+            'echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env',
+            'echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env',
+            'echo "REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}" >> .env',
 
-            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
-            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-
-            REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}
-            EOF
-            ,
             'docker compose pull',
             'docker compose up -d --remove-orphans',
             'docker compose ps',
             'docker images | grep formflow',
             'docker image prune -f'
-            ]")
+            
 
           echo "Waiting for deployment to complete..."
 
