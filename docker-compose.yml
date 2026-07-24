@@ -34,43 +34,61 @@ services:
       - formflow-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3500/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3500/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
 
   db:
-  container_name: formflow-db
-  image: mysql:8.0
+    container_name: formflow-db
+    image: mysql:8.0
+    mem_limit: 300m
 
-  mem_limit: 300m
+    env_file:
+      - .env
 
-  env_file:
-    - .env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 
-  environment:
-    MYSQL_DATABASE: ${MYSQL_DATABASE}
-    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    command: >
+      --innodb-buffer-pool-size=64M
+      --innodb-log-buffer-size=8M
+      --max-connections=20
+      --table-open-cache=128
+      --performance-schema=OFF
 
-  command: >
-    --innodb-buffer-pool-size=64M
-    --innodb-log-buffer-size=8M
-    --max-connections=20
-    --table-open-cache=128
-    --performance-schema=OFF
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
-  volumes:
-    - mysql-data:/var/lib/mysql
-    - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
 
-  restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p${MYSQL_ROOT_PASSWORD}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
 
-  healthcheck:
-    test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
-    interval: 10s
-    timeout: 5s
-    retries: 6
+    networks:
+      - formflow-net
 
 volumes:
   mysql-data:

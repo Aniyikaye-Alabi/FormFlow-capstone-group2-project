@@ -106,12 +106,22 @@ jobs:
                  sudo rm -rf /opt/capstone/app
                  git clone https://github.com/${{ github.repository }}.git /opt/capstone/app; 
              fi',
-             
+
             'cd /opt/capstone/app',
             'git fetch origin',
             'git reset --hard origin/main',
             'echo ${TAG} | sudo tee /opt/capstone/current_version',
-            'sed -i \"s/^TAG=.*/TAG=${TAG}/\" .env',
+
+            cat > .env <<EOF
+            DOCKERHUB_USER=jioke1
+            TAG=${TAG}
+
+            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+
+            REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}
+            EOF
+            ,
             'docker compose pull',
             'docker compose up -d --remove-orphans',
             'docker compose ps',
