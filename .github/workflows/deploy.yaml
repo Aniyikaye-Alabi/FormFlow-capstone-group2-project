@@ -78,9 +78,9 @@ jobs:
           docker push $DOCKERHUB_USER/$BACKEND_IMAGE:$TAG
           docker push $DOCKERHUB_USER/$BACKEND_IMAGE:latest
 
-      #################################################
+      #############################################
       # Configure AWS Credentials
-      #################################################
+      #############################################
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
