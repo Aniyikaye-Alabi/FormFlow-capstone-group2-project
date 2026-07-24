@@ -87,7 +87,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
+                
       #################################################
       # Deploy via AWS Systems Manager
       #################################################
@@ -101,6 +101,8 @@ jobs:
             --query "Command.CommandId" \
             --output text \
             --parameters commands="[
+            'sudo mkdir -p /opt/capstone',
+            'if [ ! -d /opt/capstone/app/.git ]; then git clone https://github.com/${{ github.repository }}.git /opt/capstone/app; fi',
             'cd /opt/capstone/app',
             'git fetch origin',
             'git reset --hard origin/main',

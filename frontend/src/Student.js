@@ -163,13 +163,7 @@ function Student() {
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan="5"
-                    style={{
-                      textAlign: "center",
-                      padding: "20px",
-                    }}
-                  >
+                  <td colSpan="5" className="empty-state">
                     No student records found.
                   </td>
                 </tr>

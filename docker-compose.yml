@@ -41,25 +41,36 @@ services:
       start_period: 10s
 
   db:
-    container_name: formflow-db
-    image: mysql:8.0
-    env_file:
-      - .env
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    volumes:
-      - mysql-data:/var/lib/mysql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-    networks:
-      - formflow-net
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 6
-      start_period: 20s
+  container_name: formflow-db
+  image: mysql:8.0
+
+  mem_limit: 300m
+
+  env_file:
+    - .env
+
+  environment:
+    MYSQL_DATABASE: ${MYSQL_DATABASE}
+    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+  command: >
+    --innodb-buffer-pool-size=64M
+    --innodb-log-buffer-size=8M
+    --max-connections=20
+    --table-open-cache=128
+    --performance-schema=OFF
+
+  volumes:
+    - mysql-data:/var/lib/mysql
+    - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  restart: unless-stopped
+
+  healthcheck:
+    test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+    interval: 10s
+    timeout: 5s
+    retries: 6
 
 volumes:
   mysql-data:
