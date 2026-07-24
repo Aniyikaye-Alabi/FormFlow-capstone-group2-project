@@ -4,7 +4,7 @@ services:
     build:
       context: ./frontend
       args:
-        REACT_APP_API_BASE_URL: ${REACT_APP_API_BASE_URL:-http://localhost:3500}
+        REACT_APP_API_BASE_URL: ${REACT_APP_API_BASE_URL:-/api}
         APP_VERSION: ${TAG:-dev}
     image: ${DOCKERHUB_USER:-formflow}/formflow-frontend:${TAG:-latest}
     ports:
@@ -33,6 +33,7 @@ services:
     networks:
       - formflow-net
     restart: unless-stopped
+
     healthcheck:
       test:
         [

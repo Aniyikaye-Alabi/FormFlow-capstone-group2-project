@@ -1,66 +1,95 @@
 // Teacher.js
 
-import React, { useState, useEffect } from 'react';
-import './Teacher.css';
+import React, { useState, useEffect } from "react";
+import "./Teacher.css";
 
 function Teacher() {
-  const [TeacherData, setTeacherData] = useState({
-    name: '',
-    subject: '',
-    class: ''
+  const [teacherData, setTeacherData] = useState({
+    name: "",
+    subject: "",
+    class: "",
   });
 
   const [data, setData] = useState([]);
 
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  // Since Nginx proxies /api/* to the backend,
+  // the frontend only needs a relative path.
+  const API_BASE_URL = "/api";
 
+  // Fetch all teachers
   const getData = () => {
     fetch(`${API_BASE_URL}/teacher`)
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) throw new Error("Unable to fetch teachers");
+        return res.json();
+      })
       .then((data) => setData(data))
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   useEffect(() => {
     getData();
   }, []);
 
+  // Handle form input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setTeacherData({ ...TeacherData, [name]: value });
+
+    setTeacherData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = (e) => {
+  // Submit form
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(TeacherData),
-    };
+    try {
+      const response = await fetch(`${API_BASE_URL}/addteacher`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(teacherData),
+      });
 
-    fetch(`${API_BASE_URL}/addteacher`, requestOptions)
-      .then((res) => res.json())
-      .then(() => {
-        getData();
-        setTeacherData({
-          name: '',
-          subject: '',
-          class: '',
-        });
-      })
-      .catch((err) => console.log(err));
+      if (!response.ok) {
+        throw new Error("Failed to add teacher");
+      }
+
+      await response.json();
+
+      getData();
+
+      setTeacherData({
+        name: "",
+        subject: "",
+        class: "",
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Unable to save teacher.");
+    }
   };
 
-  const handleDelete = (id) => {
-    fetch(`${API_BASE_URL}/teacher/${id}`, {
-      method: 'DELETE',
-    })
-      .then((res) => res.json())
-      .then(() => {
-        getData();
-      })
-      .catch((err) => console.error('Error deleting data:', err));
+  // Delete teacher
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/teacher/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Delete failed");
+      }
+
+      await response.json();
+      getData();
+    } catch (err) {
+      console.error(err);
+      alert("Unable to delete teacher.");
+    }
   };
 
   return (
@@ -74,12 +103,13 @@ function Teacher() {
           </h2>
 
           <form onSubmit={handleSubmit}>
+
             <div className="form-group">
               <label>Name</label>
               <input
                 type="text"
                 name="name"
-                value={TeacherData.name}
+                value={teacherData.name}
                 onChange={handleInputChange}
                 required
               />
@@ -90,7 +120,7 @@ function Teacher() {
               <input
                 type="text"
                 name="subject"
-                value={TeacherData.subject}
+                value={teacherData.subject}
                 onChange={handleInputChange}
                 required
               />
@@ -101,7 +131,7 @@ function Teacher() {
               <input
                 type="text"
                 name="class"
-                value={TeacherData.class}
+                value={teacherData.class}
                 onChange={handleInputChange}
               />
             </div>
@@ -111,6 +141,7 @@ function Teacher() {
                 Submit
               </button>
             </div>
+
           </form>
         </div>
 
@@ -133,17 +164,17 @@ function Teacher() {
 
             <tbody>
               {data.length > 0 ? (
-                data.map((d) => (
-                  <tr key={d.id}>
-                    <td>{d.id}</td>
-                    <td>{d.name}</td>
-                    <td>{d.subject}</td>
-                    <td>{d.class}</td>
+                data.map((teacher) => (
+                  <tr key={teacher.id}>
+                    <td>{teacher.id}</td>
+                    <td>{teacher.name}</td>
+                    <td>{teacher.subject}</td>
+                    <td>{teacher.class}</td>
                     <td>
                       <button
                         type="button"
                         className="delete-button"
-                        onClick={() => handleDelete(d.id)}
+                        onClick={() => handleDelete(teacher.id)}
                       >
                         Delete
                       </button>
@@ -159,6 +190,7 @@ function Teacher() {
               )}
             </tbody>
           </table>
+
         </div>
 
       </div>

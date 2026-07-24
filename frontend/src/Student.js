@@ -1,7 +1,7 @@
-// Student.js
-
 import React, { useState, useEffect } from "react";
 import "./Student.css";
+
+const API_BASE_URL = "/api";
 
 function Student() {
   const [studentData, setStudentData] = useState({
@@ -12,17 +12,20 @@ function Student() {
 
   const [data, setData] = useState([]);
 
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
   // Fetch all students
-  const getData = () => {
-    fetch(`${API_BASE_URL}/student`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Fetched Data:", data);
-        setData(data);
-      })
-      .catch((err) => console.log(err));
+  const getData = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/student`);
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch students");
+      }
+
+      const result = await res.json();
+      setData(result);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -32,46 +35,61 @@ function Student() {
   // Handle form input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setStudentData({
-      ...studentData,
+
+    setStudentData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
-  // Submit form
-  const handleSubmit = (e) => {
+  // Submit new student
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(studentData),
-    };
+    try {
+      const res = await fetch(`${API_BASE_URL}/addstudent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(studentData),
+      });
 
-    fetch(`${API_BASE_URL}/addstudent`, requestOptions)
-      .then((res) => res.json())
-      .then(() => {
-        getData();
+      if (!res.ok) {
+        throw new Error("Unable to save student");
+      }
 
-        setStudentData({
-          name: "",
-          rollNo: "",
-          class: "",
-        });
-      })
-      .catch((err) => console.log(err));
+      await res.json();
+
+      setStudentData({
+        name: "",
+        rollNo: "",
+        class: "",
+      });
+
+      getData();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  // Delete record
-  const handleDelete = (id) => {
-    fetch(`${API_BASE_URL}/student/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then(() => getData())
-      .catch((err) => console.error(err));
+  // Delete student
+  const handleDelete = async (id) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/student/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Unable to delete student");
+      }
+
+      await res.json();
+
+      getData();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -87,6 +105,7 @@ function Student() {
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Name</label>
+
               <input
                 type="text"
                 name="name"
@@ -98,6 +117,7 @@ function Student() {
 
             <div className="form-group">
               <label>Roll Number</label>
+
               <input
                 type="text"
                 name="rollNo"
@@ -109,6 +129,7 @@ function Student() {
 
             <div className="form-group">
               <label>Class</label>
+
               <input
                 type="text"
                 name="class"
@@ -144,17 +165,16 @@ function Student() {
 
             <tbody>
               {data.length > 0 ? (
-                data.map((d) => (
-                  <tr key={d.id}>
-                    <td>{d.id}</td>
-                    <td>{d.name}</td>
-                    <td>{d.roll_number}</td>
-                    <td>{d.class}</td>
+                data.map((student) => (
+                  <tr key={student.id}>
+                    <td>{student.id}</td>
+                    <td>{student.name}</td>
+                    <td>{student.roll_number}</td>
+                    <td>{student.class}</td>
                     <td>
                       <button
-                        type="button"
                         className="delete-button"
-                        onClick={() => handleDelete(d.id)}
+                        onClick={() => handleDelete(student.id)}
                       >
                         Delete
                       </button>
