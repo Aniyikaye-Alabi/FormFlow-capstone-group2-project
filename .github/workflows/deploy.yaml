@@ -102,7 +102,11 @@ jobs:
             --output text \
             --parameters commands="[
             'sudo mkdir -p /opt/capstone',
-            'if [ ! -d /opt/capstone/app/.git ]; then git clone https://github.com/${{ github.repository }}.git /opt/capstone/app; fi',
+            'if [ ! -d /opt/capstone/app/.git ]; then 
+                 sudo rm -rf /opt/capstone/app
+                 git clone https://github.com/${{ github.repository }}.git /opt/capstone/app; 
+             fi',
+             
             'cd /opt/capstone/app',
             'git fetch origin',
             'git reset --hard origin/main',
