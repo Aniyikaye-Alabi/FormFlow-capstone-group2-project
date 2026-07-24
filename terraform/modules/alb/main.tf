@@ -1,5 +1,4 @@
 resource "aws_lb" "this" {
-
   name               = "${var.project_name}-alb"
   internal           = false
   load_balancer_type = "application"
@@ -21,68 +20,121 @@ resource "aws_lb" "this" {
   )
 }
 
-# Target group for the ALB
-resource "aws_lb_target_group" "this" {
+####################################################
+# Frontend Target Group (Nginx - Port 80)
+####################################################
 
-  name = "${var.project_name}-tg"
-
-  port     = 80
-  protocol = "HTTP"
-
+resource "aws_lb_target_group" "frontend" {
+  name        = "${var.project_name}-frontend-tg"
+  port        = 80
+  protocol    = "HTTP"
   target_type = "instance"
-
-  vpc_id = var.vpc_id
+  vpc_id      = var.vpc_id
 
   health_check {
-    enabled = true
-
-    path = "/"
-
-    protocol = "HTTP"
-
-    matcher = "200"
-
-    interval = 30
-
-    timeout = 5
-
-    healthy_threshold = 2
-
+    enabled             = true
+    protocol            = "HTTP"
+    path                = "/"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
     unhealthy_threshold = 2
   }
 
   tags = merge(
     var.tags,
     {
-      Name = "${var.project_name}-tg"
+      Name = "${var.project_name}-frontend-tg"
     }
   )
 }
 
-# Attaching the EC2 instance to the target group
-resource "aws_lb_target_group_attachment" "this" {
+####################################################
+# Backend Target Group (NodeJS - Port 3500)
+####################################################
 
-  target_group_arn = aws_lb_target_group.this.arn
+resource "aws_lb_target_group" "backend" {
+  name        = "${var.project_name}-backend-tg"
+  port        = 3500
+  protocol    = "HTTP"
+  target_type = "instance"
+  vpc_id      = var.vpc_id
 
-  target_id = var.instance_id
+  health_check {
+    enabled             = true
+    protocol            = "HTTP"
+    path                = "/health"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
 
-  port = 80
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.project_name}-backend-tg"
+    }
+  )
 }
 
-# Http listener for the ALB
+####################################################
+# Attach EC2 to Frontend TG
+####################################################
+
+resource "aws_lb_target_group_attachment" "frontend" {
+  target_group_arn = aws_lb_target_group.frontend.arn
+  target_id        = var.instance_id
+  port             = 80
+}
+
+####################################################
+# Attach EC2 to Backend TG
+####################################################
+
+resource "aws_lb_target_group_attachment" "backend" {
+  target_group_arn = aws_lb_target_group.backend.arn
+  target_id        = var.instance_id
+  port             = 3500
+}
+
+####################################################
+# HTTP Listener
+####################################################
+
 resource "aws_lb_listener" "http" {
-
   load_balancer_arn = aws_lb.this.arn
-
-  port = 80
-
-  protocol = "HTTP"
+  port              = 80
+  protocol          = "HTTP"
 
   default_action {
-
-    type = "forward"
-
-    target_group_arn = aws_lb_target_group.this.arn
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.frontend.arn
   }
 }
 
+####################################################
+# Route API requests to Backend
+####################################################
+
+resource "aws_lb_listener_rule" "backend_api" {
+  listener_arn = aws_lb_listener.http.arn
+  priority     = 100
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.backend.arn
+  }
+
+  condition {
+    path_pattern {
+      values = [
+        "/student*",
+        "/addstudent*",
+        "/health*"
+      ]
+    }
+  }
+}
