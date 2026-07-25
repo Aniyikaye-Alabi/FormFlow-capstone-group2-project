@@ -88,7 +88,7 @@ if ! command -v aws &> /dev/null; then
 fi
 
 # ---- App directories ----
-mkdir -p /opt/capstone/app
+mkdir -p /opt/capstone
 mkdir -p /opt/capstone/logs
 chown -R "$APP_USER:$APP_USER" /opt/capstone
 

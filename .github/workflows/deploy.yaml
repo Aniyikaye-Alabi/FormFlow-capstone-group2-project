@@ -78,9 +78,9 @@ jobs:
           docker push $DOCKERHUB_USER/$BACKEND_IMAGE:$TAG
           docker push $DOCKERHUB_USER/$BACKEND_IMAGE:latest
 
-      #################################################
+      #############################################
       # Configure AWS Credentials
-      #################################################
+      #############################################
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -88,12 +88,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      #################################################
+      ################################################
       # Deploy via AWS Systems Manager
-      #################################################
+      ################################################
       - name: Deploy to EC2 using AWS SSM
         run: |
-
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ secrets.INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
@@ -101,16 +100,26 @@ jobs:
             --query "Command.CommandId" \
             --output text \
             --parameters commands="[
-            'cd /opt/capstone/app',
-            'git fetch origin',
-            'git reset --hard origin/main',
-            'echo ${TAG} | sudo tee /opt/capstone/current_version',
-            'sed -i \"s/^TAG=.*/TAG=${TAG}/\" .env',
-            'docker compose pull',
-            'docker compose up -d --remove-orphans',
-            'docker compose ps',
-            'docker images | grep formflow',
-            'docker image prune -f'
+              'sudo mkdir -p /opt/capstone',
+              'if [ ! -d /opt/capstone/app/.git ]; then sudo rm -rf /opt/capstone/app && git clone https://github.com/${{ github.repository }}.git /opt/capstone/app && sudo chown -R ubuntu:ubuntu /opt/capstone/app; fi',
+              'cd /opt/capstone/app',
+              'git fetch origin',
+              'git reset --hard origin/main',
+              'echo ${TAG} | sudo tee /opt/capstone/current_version',
+              'rm -f .env',
+              'echo DOCKERHUB_USER=jioke1 > .env',
+              'echo TAG=${TAG} >> .env',
+              'echo MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} >> .env',
+              'echo MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} >> .env',
+              'echo MYSQL_USER=${{ secrets.MYSQL_USER }} >> .env',
+              'echo MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} >> .env',
+              'echo MYSQL_HOST=${{ secrets.MYSQL_HOST }} >> .env',
+              'echo REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }} >> .env',
+              'docker compose pull',
+              'docker compose up -d --remove-orphans',
+              'docker compose ps',
+              'docker images | grep formflow',
+              'docker image prune -f'
             ]")
 
           echo "Waiting for deployment to complete..."
@@ -131,6 +140,7 @@ jobs:
           echo "======================================"
           echo "Deployment completed successfully"
           echo "======================================"
+          echo ""
           echo "Version Running : $TAG"
           echo ""
           echo "Frontend Image:"
