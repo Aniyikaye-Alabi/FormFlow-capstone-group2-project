@@ -8,7 +8,7 @@ services:
         APP_VERSION: ${TAG:-dev}
     image: ${DOCKERHUB_USER:-formflow}/formflow-frontend:${TAG:-latest}
     ports:
-      - "8080:80"
+      - "80:80"
     depends_on:
       backend:
         condition: service_healthy
