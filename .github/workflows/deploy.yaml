@@ -3,7 +3,7 @@ name: Build and Deploy FormFlow
 on:
   push:
     branches:
-      - main
+      - main-0
 
 env:
   DOCKERHUB_USER: jioke1
